@@ -46,38 +46,40 @@ public class ClienteServiceImpl implements ClienteService {
 		return cliente.get();
 	}
 
-	@Override
-	public void inserir(Cliente cliente) {
-		salvarClienteComCep(cliente);
-	}
+  @Override
+  public void inserir(Cliente cliente) {
+    cliente.setEndereco(formatarCep(cliente));
+    clienteRepository.save(cliente);
+  }
 
-	@Override
-	public void atualizar(Long id, Cliente cliente) {
-		// Buscar Cliente por ID, caso exista:
-		Optional<Cliente> clienteBd = clienteRepository.findById(id);
-		if (clienteBd.isPresent()) {
-			salvarClienteComCep(cliente);
-		}
-	}
+  @Override
+  public void atualizar(Long id, Cliente cliente) {
+    // Buscar Cliente por ID, caso exista:
+    Optional<Cliente> clienteBd = clienteRepository.findById(id);
+    if (clienteBd.isPresent()) {
+      clienteBd.get().setNome(cliente.getNome());
+      clienteBd.get().setEndereco(formatarCep(cliente));
+      clienteRepository.save(clienteBd.get());
+    }
+  }
 
-	@Override
-	public void deletar(Long id) {
-		// Deletar Cliente por ID.
-		clienteRepository.deleteById(id);
-	}
+  @Override
+  public void deletar(Long id) {
+    // Deletar Cliente por ID.
+    clienteRepository.deleteById(id);
+  }
 
-	private void salvarClienteComCep(Cliente cliente) {
-		// Verificar se o Endereco do Cliente já existe (pelo CEP).
-		String cep = cliente.getEndereco().getCep();
-		Endereco endereco = enderecoRepository.findById(cep).orElseGet(() -> {
-			// Caso não exista, integrar com o ViaCEP e persistir o retorno.
-			Endereco novoEndereco = viaCepService.consultarCep(cep);
-			enderecoRepository.save(novoEndereco);
-			return novoEndereco;
-		});
-		cliente.setEndereco(endereco);
-		// Inserir Cliente, vinculando o Endereco (novo ou existente).
-		clienteRepository.save(cliente);
-	}
+  private Endereco formatarCep(Cliente cliente) {
+    // Verificar se o Endereco do Cliente já existe (pelo CEP).
+    String cep = cliente.getEndereco().getCep();
+    Endereco endereco = enderecoRepository.findById(cep).orElseGet(() -> {
+      // Caso não exista, integrar com o ViaCEP e persistir o retorno.
+      Endereco novoEndereco = viaCepService.consultarCep(cep);
+      enderecoRepository.save(novoEndereco);
+      return novoEndereco;
+    });
+    cliente.setEndereco(endereco);
+    return cliente.getEndereco();
+  }
 
 }
