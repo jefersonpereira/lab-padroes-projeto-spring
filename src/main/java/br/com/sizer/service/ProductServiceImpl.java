@@ -3,9 +3,10 @@ package br.com.sizer.service;
 import br.com.sizer.exception.ResourceNotFoundException;
 import br.com.sizer.model.Product;
 import br.com.sizer.repository.ProductRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -18,21 +19,32 @@ public class ProductServiceImpl implements ProductService {
     ProductRepository productRepository;
 
     @Override
-    public Product createProduct(Product product) {
+    public Product create(Product product) {
         return productRepository.save(product);
     }
 
     @Override
-    public Page<Product> getAllProduct(int page, int limit) {
-        Page<Product> resultPage = productRepository.findAll(new PageRequest(page, limit));
-        if (page > resultPage.getTotalPages())
+    public Product findOne(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return product;
+    }
+
+    @Override
+    public Page<Product> findAll(Pageable pageable) {
+        Page<Product> resultPage = productRepository.findAll(pageable);
+        if (pageable.getPageNumber() > resultPage.getTotalPages())
             throw new ResourceNotFoundException("Product", "id", resultPage);
         return resultPage;
     }
 
     @Override
-    public Product updateProduct(Long id, Product productDetails) {
-        Product product = productRepository.findById(id);
+    public List<Product> findAll(Specification<Product> spec) {
+        return productRepository.findAll(spec);
+    }
+
+    @Override
+    public Product update(Long id, Product productDetails) {
+        Product product = productRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         if (product == null)
             throw new ResourceNotFoundException("Product", "id", id);
 
@@ -49,16 +61,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(Long id) {
-        Product product = productRepository.findById(id);
+    public void delete(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         if (product == null)
             throw new ResourceNotFoundException("Product", "id", id);
 
         productRepository.delete(product);
     }
 
-    @Override
-    public List<Product> searchProduct(Specification<Product> spec) {
-        return productRepository.findAll(spec);
-    }
 }

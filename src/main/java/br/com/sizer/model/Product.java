@@ -1,49 +1,46 @@
 package br.com.sizer.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "product")
 public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "name", length = 255)
-    private String name;
+	@Column(name = "name", length = 255)
+	private String name;
 
-    @Column(name = "productId", length = 7)
-    private int productId;
+	@Column(name = "productId", length = 7)
+	private int productId;
 
-    @Column(name = "skuId", length = 7)
-    private int skuId;
+	@Column(name = "skuId", length = 7)
+	private int skuId;
 
-    // busto
-    @Column(name = "bust", length = 3)
-    private int bust;
+	// busto
+	@Column(name = "bust", length = 3)
+	private int bust;
 
-    // cintura
-    @Column(name = "waist", length = 3)
-    private int waist;
+	// cintura
+	@Column(name = "waist", length = 3)
+	private int waist;
 
-    // quadril
-    @Column(name = "hip", length = 3)
-    private int hip;
+	// quadril
+	@Column(name = "hip", length = 3)
+	private int hip;
 
-    // comprimento
-    @Column(name = "length", length = 3)
-    private int length;
+	// comprimento
+	@Column(name = "length", length = 3)
+	private int length;
 
-    
-    @Column(name = "createdBy")
-    private String createdBy;
-    
-    @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
-    
-    private Store store;
-    
-    
+	@Column(name = "createdBy")
+	private String createdBy;
+
+	@ManyToOne
+	@JoinColumn(name = "store_id", nullable = false)
+
+	private Store store;
 
 	public Product(String name, int productId, int skuId, int bust, int waist, int hip, int length, String createdBy,
 			Store store) {
@@ -141,5 +138,5 @@ public class Product {
 				+ bust + ", waist=" + waist + ", hip=" + hip + ", length=" + length + ", createdBy=" + createdBy
 				+ ", store=" + store + "]";
 	}
-    
+
 }

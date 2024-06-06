@@ -1,19 +1,24 @@
 package br.com.sizer.service;
 
 import br.com.sizer.model.Product;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
 public interface ProductService {
-    Product createProduct(Product product);
 
-    Page<Product> getAllProduct(int page, int limit);
+    public Product findOne(Long id);
 
-    Product updateProduct(Long id, Product productDetails);
+    public List<Product> findAll(Specification<Product> spec);
 
-    void deleteProduct(Long id);
+    public Page<Product> findAll(Pageable pageable);
 
-    List<Product> searchProduct(Specification<Product> spec);
+    public Product create(Product company);
+
+    public Product update(Long id, Product companyDetails);
+
+    public void delete(Long id);
 }

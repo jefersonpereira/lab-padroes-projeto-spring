@@ -1,45 +1,50 @@
-package br.com.sizer.controller;
+// package br.com.sizer.controller;
 
-import br.com.sizer.config.JwtTokenUtil;
-import br.com.sizer.dto.AuthToken;
-import br.com.sizer.dto.LoginUser;
-import br.com.sizer.model.User;
-import br.com.sizer.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+// import br.com.sizer.dto.LoginResponse;
+// import br.com.sizer.dto.LoginUserDto;
+// import br.com.sizer.dto.RegisterUserDto;
+// import br.com.sizer.model.User;
+// import br.com.sizer.service.AuthenticationService;
+// import br.com.sizer.service.JwtService;
 
-@RestController
-@RequestMapping("/api/auth")
-public class AuthenticationController {
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.web.bind.annotation.PostMapping;
+// import org.springframework.web.bind.annotation.RequestBody;
+// import org.springframework.web.bind.annotation.RequestMapping;
+// import org.springframework.web.bind.annotation.RestController;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+// @RequestMapping("/auth")
+// @RestController
+// public class AuthenticationController {
+// private final JwtService jwtService;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+// private final AuthenticationService authenticationService;
 
-    @Autowired
-    private UserService userService;
+// public AuthenticationController(JwtService jwtService, AuthenticationService
+// authenticationService) {
+// this.jwtService = jwtService;
+// this.authenticationService = authenticationService;
+// }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<?> register(@RequestBody LoginUser loginUser) throws AuthenticationException {
+// @PostMapping("/signup")
+// public ResponseEntity<User> register(@RequestBody RegisterUserDto
+// registerUserDto) {
+// User registeredUser = authenticationService.signup(registerUserDto);
 
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginUser.getUsername(),
-                        loginUser.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        final User user = userService.findOne(loginUser.getUsername());
-        final String token = jwtTokenUtil.generateToken(user);
-        return ResponseEntity.ok(new AuthToken(token));
-    }
-}
+// return ResponseEntity.ok(registeredUser);
+// }
+
+// @PostMapping("/login")
+// public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto
+// loginUserDto) {
+// User authenticatedUser = authenticationService.authenticate(loginUserDto);
+
+// String jwtToken = jwtService.generateToken(authenticatedUser);
+
+// LoginResponse loginResponse = new LoginResponse();
+// loginResponse.setToken(jwtToken);
+// loginResponse.setExpiresIn(jwtService.getExpirationTime());
+
+// return ResponseEntity.ok(loginResponse);
+// }
+// }

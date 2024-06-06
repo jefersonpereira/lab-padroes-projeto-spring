@@ -1,55 +1,85 @@
-package br.com.sizer.model;
+// package br.com.sizer.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+// import jakarta.persistence.*;
+// import lombok.Getter;
+// import lombok.Setter;
 
-import javax.persistence.*;
+// import org.hibernate.annotations.CreationTimestamp;
+// import org.hibernate.annotations.UpdateTimestamp;
+// import org.springframework.security.core.GrantedAuthority;
+// import org.springframework.security.core.userdetails.UserDetails;
 
-@Entity
-@Table(name = "user")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+// import java.util.Collection;
+// import java.util.Date;
+// import java.util.List;
 
-    @Column(name = "username", unique = true, length = 50)
-    private String userName;
+// @Table(name = "user")
+// @Entity(name = "User")
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(name = "password", length = 255)
-    private String password;
+// @Getter
+// @Setter
 
-    @Column(name = "roles", length = 20)
-    private String roles;
+// public class User implements UserDetails {
+// @Id
+// @GeneratedValue(strategy = GenerationType.AUTO)
+// @Column(nullable = false)
+// private Integer id;
 
-    public Long getId() {
-        return id;
-    }
+// @Column(nullable = false)
+// private String fullName;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+// @Column(unique = true, length = 100, nullable = false)
+// private String email;
 
-    public String getUserName() {
-        return userName;
-    }
+// @Column(nullable = false)
+// private String password;
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+// @CreationTimestamp
+// @Column(updatable = false, name = "created_at")
+// private Date createdAt;
 
-    public String getPassword() {
-        return password;
-    }
+// @UpdateTimestamp
+// @Column(name = "updated_at")
+// private Date updatedAt;
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+// @Override
+// public Collection<? extends GrantedAuthority> getAuthorities() {
+// return List.of();
+// }
 
-    public String getRoles() {
-        return roles;
-    }
+// public String getPassword() {
+// return password;
+// }
 
-    public void setRoles(String roles) {
-        this.roles = roles;
-    }
-}
+// @Override
+// public String getUsername() {
+// return email;
+// }
+
+// @Override
+// public boolean isAccountNonExpired() {
+// return true;
+// }
+
+// @Override
+// public boolean isAccountNonLocked() {
+// return true;
+// }
+
+// @Override
+// public boolean isCredentialsNonExpired() {
+// return true;
+// }
+
+// @Override
+// public boolean isEnabled() {
+// return true;
+// }
+
+// // Getters and setters
+
+// @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+// @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"),
+// inverseJoinColumns = @JoinColumn(name = "role_id"))
+// private List<Role> roles;
+// }
