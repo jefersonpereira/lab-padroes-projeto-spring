@@ -1,49 +1,48 @@
-// package br.com.sizer.service;
+package br.com.sizer.service;
 
-// import org.springframework.security.authentication.AuthenticationManager;
-// import
-// org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-// import org.springframework.security.crypto.password.PasswordEncoder;
-// import org.springframework.stereotype.Service;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-// import br.com.sizer.dto.LoginUserDto;
-// import br.com.sizer.dto.RegisterUserDto;
-// import br.com.sizer.model.User;
-// import br.com.sizer.repository.UserRepository;
+import br.com.sizer.dto.LoginUserDto;
+import br.com.sizer.dto.RegisterUserDto;
+import br.com.sizer.model.User;
+import br.com.sizer.repository.UserRepository;
 
-// @Service
-// public class AuthenticationService {
-// private final UserRepository userRepository;
+@Service
+public class AuthenticationService {
+    private final UserRepository userRepository;
 
-// private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-// private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-// public AuthenticationService(
-// UserRepository userRepository,
-// AuthenticationManager authenticationManager,
-// PasswordEncoder passwordEncoder) {
-// this.authenticationManager = authenticationManager;
-// this.userRepository = userRepository;
-// this.passwordEncoder = passwordEncoder;
-// }
+    public AuthenticationService(
+            UserRepository userRepository,
+            AuthenticationManager authenticationManager,
+            PasswordEncoder passwordEncoder) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-// public User signup(RegisterUserDto input) {
-// User user = new User();
-// user.setFullName(input.getFullName());
-// user.setEmail(input.getEmail());
-// user.setPassword(passwordEncoder.encode(input.getPassword()));
+    public User signup(RegisterUserDto input) {
+        User user = new User();
+        user.setFullName(input.getFullName());
+        user.setEmail(input.getEmail());
+        user.setPassword(passwordEncoder.encode(input.getPassword()));
 
-// return userRepository.save(user);
-// }
+        return userRepository.save(user);
+    }
 
-// public User authenticate(LoginUserDto input) {
-// authenticationManager.authenticate(
-// new UsernamePasswordAuthenticationToken(
-// input.getEmail(),
-// input.getPassword()));
+    public User authenticate(LoginUserDto input) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        input.getEmail(),
+                        input.getPassword()));
 
-// return userRepository.findByEmail(input.getEmail())
-// .orElseThrow();
-// }
-// }
+        return userRepository.findByEmail(input.getEmail())
+                .orElseThrow();
+    }
+}
