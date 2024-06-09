@@ -1,8 +1,12 @@
 package br.com.sizer.service;
 
+import br.com.sizer.dto.RegisterUserDto;
 import br.com.sizer.exception.DuplicateUserNameException;
 import br.com.sizer.exception.ResourceNotFoundException;
+import br.com.sizer.model.Role;
+import br.com.sizer.model.RoleName;
 import br.com.sizer.model.User;
+import br.com.sizer.repository.RoleRepository;
 import br.com.sizer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.data.domain.Page;
@@ -11,21 +15,26 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Autowired
     private UserRepository userRepository;
+    private RoleRepository roleRepository;
+    private PasswordEncoder passwordEncoder;
 
-    public void UserService(UserRepository userRepository) {
+    public void UserService(UserRepository userRepository, RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -38,6 +47,22 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
         return new UserDetailsImpl(user);
+    }
+
+    public User createAdministrator(RegisterUserDto input) {
+        Optional<Role> optionalRole = roleRepository.findByName(RoleName.ADMIN);
+
+        if (optionalRole.isEmpty()) {
+            return null;
+        }
+
+        var user = new User();
+        user.setFullName(input.getFullName());
+        user.setEmail(input.getEmail());
+        user.setPassword(passwordEncoder.encode(input.getPassword()));
+        user.setRole(optionalRole.get());
+
+        return userRepository.save(user);
     }
 
     @Override
@@ -81,11 +106,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
 
-    public List<String> findAll() {
+    public List<User> findAll() {
         List<User> users = new ArrayList<>();
         userRepository.findAll().forEach(users::add);
-        return users.stream()
-                .map(User::getUsername)
-                .collect(Collectors.toList());
+        return users;
     }
 }

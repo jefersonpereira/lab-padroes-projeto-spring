@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import br.com.sizer.dto.RegisterUserDto;
+
 // import org.springframework.data.domain.Page;
 // import org.springframework.data.domain.Pageable;
 
@@ -17,7 +19,7 @@ public interface UserService {
 
     public Optional<User> findOne(String email);
 
-    public List<String> findAll();
+    public List<User> findAll();
 
     // public Page<User> findAll(Pageable pageable);
 
@@ -26,5 +28,7 @@ public interface UserService {
     public User update(Long id, User userDetails);
 
     public void delete(Long id);
+
+    public User createAdministrator(RegisterUserDto input);
 
 }
