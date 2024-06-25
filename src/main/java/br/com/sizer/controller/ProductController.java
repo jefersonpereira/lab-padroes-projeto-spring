@@ -6,12 +6,14 @@ import br.com.sizer.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,5 +68,17 @@ public class ProductController {
         Specification<Product> spec = builder.build();
         List<Product> response = productService.findAll(spec);
         return new ResponseEntity<Object>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/recommend")
+    public ResponseEntity<Page<Product>> recommendProducts(
+            @RequestParam Map<String, Double> measurements,
+            @RequestParam(required = false) String categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> recommendedProducts = productService.recommendProducts(measurements, categoryId, pageable);
+        return ResponseEntity.ok(recommendedProducts);
     }
 }

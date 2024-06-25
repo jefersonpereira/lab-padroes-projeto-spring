@@ -11,6 +11,9 @@ import br.com.sizer.repository.RoleRepository;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Component
 public class RoleSeeder implements ApplicationListener<ContextRefreshedEvent> {
@@ -26,14 +29,22 @@ public class RoleSeeder implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     private void loadRoles() {
-        RoleName[] roleNames = new RoleName[] { RoleName.USER, RoleName.ADMIN, RoleName.SUPER_ADMIN };
+        RoleName[] roleNames = new RoleName[] { RoleName.ROLE_USER, RoleName.ROLE_ADMIN,
+                RoleName.ROLE_SUPER_ADMIN };
         Map<RoleName, String> roleDescriptionMap = Map.of(
-                RoleName.USER, "Default user role",
-                RoleName.ADMIN, "Administrator role",
-                RoleName.SUPER_ADMIN, "Super Administrator role");
+                RoleName.ROLE_USER, "Default user role",
+                RoleName.ROLE_ADMIN, "Administrator role",
+                RoleName.ROLE_SUPER_ADMIN, "Super Administrator role");
 
         Arrays.stream(roleNames).forEach((roleName) -> {
-            Optional<Role> optionalRole = roleRepository.findByName(roleName);
+
+            Iterable<Role> rolesIterable = roleRepository.findAll();
+            Set<Role> roles = StreamSupport.stream(rolesIterable.spliterator(), false)
+                    .collect(Collectors.toSet());
+
+            Optional<Role> optionalRole = roles.stream()
+                    .filter(role -> role.getName().equals(roleName))
+                    .findFirst();
 
             optionalRole.ifPresentOrElse(System.out::println, () -> {
                 Role roleToCreate = new Role();

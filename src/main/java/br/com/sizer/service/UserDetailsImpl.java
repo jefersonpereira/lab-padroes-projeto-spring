@@ -2,48 +2,75 @@ package br.com.sizer.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import br.com.sizer.model.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.sizer.model.User;
-import lombok.Getter;
 
-@Getter
 public class UserDetailsImpl implements UserDetails {
+    private static final long serialVersionUID = 1L;
 
-    private User user; // Classe de usuário que criamos anteriormente
-    private Role role;
+    private Long id;
 
-    public UserDetailsImpl(User user) {
-        this.user = user;
+    private String username;
+
+    private String email;
+
+    @JsonIgnore
+    private String password;
+
+    private Collection<? extends GrantedAuthority> authorities;
+
+    public UserDetailsImpl(Long id, String username, String email, String password,
+            Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
+    }
+
+    public static UserDetailsImpl build(User user) {
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+
+        return new UserDetailsImpl(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                authorities);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        /*
-         * Este método converte a lista de papéis (roles) associados ao usuário
-         * em uma coleção de GrantedAuthorities, que é a forma que o Spring Security
-         * usa para representar papéis. Isso é feito mapeando cada papel para um
-         * novo SimpleGrantedAuthority, que é uma implementação simples de
-         * GrantedAuthority
-         */
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.getName().toString());
+        return authorities;
+    }
 
-        return List.of(authority);
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
-    } // Retorna a credencial do usuário que criamos anteriormente
+        return password;
+    }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
-    } // Retorna o nome de usuário do usuário que criamos anteriormente
+        return username;
+    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -65,4 +92,13 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        UserDetailsImpl user = (UserDetailsImpl) o;
+        return Objects.equals(id, user.id);
+    }
 }

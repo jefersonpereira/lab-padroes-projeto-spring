@@ -1,6 +1,6 @@
 package br.com.sizer.service;
 
-import java.util.Optional;
+// import java.util.Optional;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,17 +9,17 @@ import org.springframework.stereotype.Service;
 
 import br.com.sizer.dto.LoginUserDto;
 import br.com.sizer.dto.RegisterUserDto;
-import br.com.sizer.model.Role;
-import br.com.sizer.model.RoleName;
+// import br.com.sizer.model.Role;
+// import br.com.sizer.model.RoleName;
 import br.com.sizer.model.User;
-import br.com.sizer.repository.RoleRepository;
+// import br.com.sizer.repository.RoleRepository;
 import br.com.sizer.repository.UserRepository;
 
 @Service
 public class AuthenticationService {
     private final UserRepository userRepository;
 
-    private final RoleRepository roleRepository;
+    // private final RoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -27,28 +27,28 @@ public class AuthenticationService {
 
     public AuthenticationService(
             UserRepository userRepository,
-            RoleRepository roleRepository,
+            // RoleRepository roleRepository,
             AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        // this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     public User signup(RegisterUserDto input) {
 
-        Optional<Role> optionalRole = roleRepository.findByName(RoleName.USER);
+        // Optional<Role> optionalRole = roleRepository.findByName(RoleName.USER);
 
-        if (optionalRole.isEmpty()) {
-            return null;
-        }
+        // if (optionalRole.isEmpty()) {
+        // return null;
+        // }
 
         User user = new User();
-        user.setFullName(input.getFullName());
+        // user.setFullName(input.getFullName());
         user.setEmail(input.getEmail());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
-        user.setRole(optionalRole.get());
+        // user.setRole(optionalRole.get());
 
         return userRepository.save(user);
     }
@@ -59,7 +59,7 @@ public class AuthenticationService {
                         input.getEmail(),
                         input.getPassword()));
 
-        return userRepository.findByEmail(input.getEmail())
+        return userRepository.findByUsername(input.getEmail())
                 .orElseThrow();
     }
 }

@@ -14,7 +14,6 @@ import br.com.sizer.dto.RegisterUserDto;
 import br.com.sizer.model.User;
 
 @Service
-
 public interface UserService {
 
     public Optional<User> findOne(String email);

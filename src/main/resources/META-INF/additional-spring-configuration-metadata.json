@@ -13,5 +13,10 @@
     "name": "org.springframework.security",
     "type": "java.lang.String",
     "description": "A description for 'org.springframework.security'"
+  },
+  {
+    "name": "security.jwt.cookie-name",
+    "type": "java.lang.String",
+    "description": "A description for 'security.jwt.cookie-name'"
   }
 ]}
