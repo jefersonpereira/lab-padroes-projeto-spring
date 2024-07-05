@@ -1,5 +1,5 @@
 package one.digitalinnovation.gof.service;
-
+import one.digitalinnovation.gof.exception.ClienteNotFoundException;
 import one.digitalinnovation.gof.model.Cliente;
 
 /**
@@ -11,14 +11,14 @@ import one.digitalinnovation.gof.model.Cliente;
  */
 public interface ClienteService {
 
-	Iterable<Cliente> buscarTodos();
+    Iterable<Cliente> buscarTodos();
 
-	Cliente buscarPorId(Long id);
+    Cliente buscarPorId(Long id);
 
-	void inserir(Cliente cliente);
+    void inserir(Cliente cliente);
 
-	void atualizar(Long id, Cliente cliente);
+    Cliente atualizar(Long id, Cliente cliente) throws ClienteNotFoundException;
 
-	void deletar(Long id);
+    void deletar(Long id);
 
 }

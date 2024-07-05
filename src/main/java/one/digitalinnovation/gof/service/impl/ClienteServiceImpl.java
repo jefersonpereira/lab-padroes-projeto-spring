@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import one.digitalinnovation.gof.exception.ClienteNotFoundException;
 import one.digitalinnovation.gof.model.Cliente;
 import one.digitalinnovation.gof.model.ClienteRepository;
 import one.digitalinnovation.gof.model.Endereco;
@@ -35,49 +36,48 @@ public class ClienteServiceImpl implements ClienteService {
 
 	@Override
 	public Iterable<Cliente> buscarTodos() {
-		// Buscar todos os Clientes.
-		return clienteRepository.findAll();
-	}
+        Iterable<Cliente> clientes = clienteRepository.findAll();
+        clientes.forEach(cliente -> cliente.setImc(cliente.calcularIMC())); // Calcular o IMC para todos os clientes
+        return clientes;
+    }
 
 	@Override
-	public Cliente buscarPorId(Long id) {
-		// Buscar Cliente por ID.
-		Optional<Cliente> cliente = clienteRepository.findById(id);
-		return cliente.get();
-	}
+    public Cliente buscarPorId(Long id) {
+        Optional<Cliente> cliente = clienteRepository.findById(id);
+        cliente.ifPresent(c -> c.setImc(c.calcularIMC())); // Calcular o IMC p/ cliente recuperado
+        return cliente.orElse(null);
+    }
 
 	@Override
-	public void inserir(Cliente cliente) {
-		salvarClienteComCep(cliente);
-	}
+    public void inserir(Cliente cliente) {
+        salvarClienteComCep(cliente);
+    }
 
-	@Override
-	public void atualizar(Long id, Cliente cliente) {
-		// Buscar Cliente por ID, caso exista:
-		Optional<Cliente> clienteBd = clienteRepository.findById(id);
-		if (clienteBd.isPresent()) {
-			salvarClienteComCep(cliente);
-		}
-	}
+    @Override
+    public Cliente atualizar(Long id, Cliente cliente) throws ClienteNotFoundException {
+        if (!clienteRepository.existsById(id)) {
+            throw new ClienteNotFoundException("Cliente não encontrado com ID: " + id);
+        }
+        salvarClienteComCep(cliente);
+        return cliente;
+    }
 
-	@Override
-	public void deletar(Long id) {
-		// Deletar Cliente por ID.
-		clienteRepository.deleteById(id);
-	}
+    @Override
+    public void deletar(Long id) {
+        if (!clienteRepository.existsById(id)) {
+            throw new ClienteNotFoundException("Cliente não encontrado com ID: " + id);
+        }
+        clienteRepository.deleteById(id);
+    }
 
-	private void salvarClienteComCep(Cliente cliente) {
-		// Verificar se o Endereco do Cliente já existe (pelo CEP).
-		String cep = cliente.getEndereco().getCep();
-		Endereco endereco = enderecoRepository.findById(cep).orElseGet(() -> {
-			// Caso não exista, integrar com o ViaCEP e persistir o retorno.
-			Endereco novoEndereco = viaCepService.consultarCep(cep);
-			enderecoRepository.save(novoEndereco);
-			return novoEndereco;
-		});
-		cliente.setEndereco(endereco);
-		// Inserir Cliente, vinculando o Endereco (novo ou existente).
-		clienteRepository.save(cliente);
-	}
-
+    private void salvarClienteComCep(Cliente cliente) {
+        String cep = cliente.getEndereco().getCep();
+        Endereco endereco = enderecoRepository.findById(cep).orElseGet(() -> {
+            Endereco novoEndereco = viaCepService.consultarCep(cep);
+            enderecoRepository.save(novoEndereco);
+            return novoEndereco;
+        });
+        cliente.setEndereco(endereco);
+        clienteRepository.save(cliente);
+    }
 }
